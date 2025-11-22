@@ -37,22 +37,20 @@
   left: 0;
   width: 100vw;
   max-height: 100vh;
-  background: rgb(216, 216, 216);
+  background: rgb(216, 216, 216); /* Fondo base */
   box-shadow: 0 4px 18px rgba(135, 51, 51, 0.17);
   color: black;
   padding: 1.5rem 1rem;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
   opacity: 0;
   pointer-events: none;
-  transition: 
-    top 0.8s cubic-bezier(0.4,0,0.2,1),
-    opacity 0.8s cubic-bezier(0.4,0,0.2,1);
+  transition: top 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.8s cubic-bezier(0.4,0,0.2,1);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .letter-fullscreen.show {
@@ -60,6 +58,23 @@
   opacity: 1;
   pointer-events: all;
   animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Pseudo-elemento para fondo semitransparente */
+.letter-fullscreen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url("/public/images/foto\ amor.jpg") center center/cover no-repeat;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Para que el contenido quede encima */
+.letter-fullscreen > * {
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {

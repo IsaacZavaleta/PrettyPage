@@ -70,3 +70,38 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.code-block {
+  background: #fdf6e3;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 1.08rem;
+  color: #222;
+  white-space: pre-wrap;
+  box-shadow: 0 4px 16px rgba(170, 140, 90, 0.06);
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.code-comment {
+  color: #6ca16e;
+}
+
+.code-secondary {
+  color: #54a3c9;
+}
+
+.code-highlight {
+  color: #b9a329;
+  font-weight: bold;
+}
+
+.code-string {
+  color: #e06c75;
+  font-style: italic;
+}
+
+.code-special {
+  color: #56b6c2;
+}

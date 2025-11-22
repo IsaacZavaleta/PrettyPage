@@ -23,7 +23,9 @@ function App() {
       </div>
 
       <div
-        className={`letter-fullscreen ${open ? "show" : ""} flex flex-col md:flex-row items-start md:items-center justify-center gap-6 md:gap-8 p-4`}
+        className={`letter-fullscreen ${
+          open ? "show" : ""
+        } flex flex-col md:flex-row items-start md:items-center justify-center gap-6 md:gap-8 p-4`}
       >
         {/* Panel de texto (responsive) */}
         <div className="w-full md:basis-1/3 md:max-w-[33%] mt-2 text-start px-2">
@@ -31,7 +33,9 @@ function App() {
         </div>
         {/* Panel visual (responsive) */}
         <div className="w-full md:basis-2/3 md:max-w-[67%] mt-2 px-2">
-          <BunnyHeart dateInit={new Date("2020-08-25")} phrase="Ha x is" />
+          {open && (
+            <BunnyHeart dateInit={new Date("2020-08-25")} phrase="Ha x is" />
+          )}
         </div>
       </div>
     </div>
