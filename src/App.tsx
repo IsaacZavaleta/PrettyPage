@@ -62,7 +62,7 @@ function App() {
         {/* Panel visual (responsive) */}
         <div className="w-full md:basis-2/3 md:max-w-[67%] mt-2 px-2">
           {open && (
-            <BunnyHeart dateInit={new Date("2020-08-25")} phrase="Ha x is" />
+            <BunnyHeart dateInit={new Date("2020-12-16")} phrase="Ha x is" />
           )}
         </div>
       </div>
