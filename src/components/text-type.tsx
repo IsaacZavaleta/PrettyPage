@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ElementType,
   useEffect,
@@ -58,8 +56,12 @@ const TextType = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
+
   const cursorRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLElement>(null);
+
+  const typoInProgressRef = useRef(false);
+  const activeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const textArray = useMemo(
     () => (Array.isArray(text) ? text : [text]),
@@ -72,14 +74,8 @@ const TextType = ({
     return Math.random() * (max - min) + min;
   }, [variableSpeed, typingSpeed]);
 
-  const getCurrentTextColor = () => {
-    if (textColors.length === 0) return;
-    return textColors[currentTextIndex % textColors.length];
-  };
-
   useEffect(() => {
     if (!startOnVisible || !containerRef.current) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -90,7 +86,6 @@ const TextType = ({
       },
       { threshold: 0.1 }
     );
-
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, [startOnVisible]);
@@ -111,58 +106,78 @@ const TextType = ({
   useEffect(() => {
     if (!isVisible) return;
 
-    let timeout: NodeJS.Timeout;
+    if (activeTimeoutRef.current) {
+      clearTimeout(activeTimeoutRef.current);
+      activeTimeoutRef.current = null;
+    }
 
+    let timeout: NodeJS.Timeout;
     const currentText = textArray[currentTextIndex];
     const processedText = reverseMode
       ? currentText.split("").reverse().join("")
       : currentText;
 
-    const executeTypingAnimation = () => {
-      if (isDeleting) {
-        if (displayedText === "") {
-          setIsDeleting(false);
-          if (currentTextIndex === textArray.length - 1 && !loop) {
-            return;
-          }
-
-          if (onSentenceComplete) {
-            onSentenceComplete(textArray[currentTextIndex], currentTextIndex);
-          }
-
-          setCurrentTextIndex((prev) => (prev + 1) % textArray.length);
-          setCurrentCharIndex(0);
-          timeout = setTimeout(() => {}, pauseDuration);
-        } else {
-          timeout = setTimeout(() => {
-            setDisplayedText((prev) => prev.slice(0, -1));
-          }, deletingSpeed);
-        }
-      } else {
-        if (currentCharIndex < processedText.length) {
-          timeout = setTimeout(
-            () => {
-              setDisplayedText(
-                (prev) => prev + processedText[currentCharIndex]
-              );
-              setCurrentCharIndex((prev) => prev + 1);
-            },
-            variableSpeed ? getRandomSpeed() : typingSpeed
-          );
-        } else if (textArray.length >= 1) {
-          if (!loop && currentTextIndex === textArray.length - 1) return;
-          timeout = setTimeout(() => {
-            setIsDeleting(true);
-          }, pauseDuration);
-        }
-      }
+    const schedule = (fn: () => void, delay: number) => {
+      timeout = setTimeout(() => fn(), delay);
+      activeTimeoutRef.current = timeout;
     };
 
-    if (currentCharIndex === 0 && !isDeleting && displayedText === "") {
-      timeout = setTimeout(executeTypingAnimation, initialDelay);
-    } else {
-      executeTypingAnimation();
+    // BORRADO
+    if (isDeleting) {
+      if (displayedText === "") {
+        setIsDeleting(false);
+
+        // Si es el último texto y loop es falso, no avanzamos más ni repetimos
+        if (!loop && currentTextIndex === textArray.length - 1) {
+          return;
+        }
+
+        if (onSentenceComplete)
+          onSentenceComplete(textArray[currentTextIndex], currentTextIndex);
+
+        setCurrentTextIndex((prev) => (prev + 1) % textArray.length);
+        setCurrentCharIndex(0);
+        return;
+      }
+
+      schedule(() => {
+        setDisplayedText((prev) => prev.slice(0, -1));
+      }, deletingSpeed);
+
+      return () => clearTimeout(timeout);
     }
+
+    // ESCRITURA NORMAL O TYPOS
+    if (currentCharIndex < processedText.length) {
+      // Efecto typo SOLO en el último bloque
+      const isLastSentence = currentTextIndex === textArray.length - 1;
+      const typoChance = isLastSentence ? 0.08 : 0;
+      const shouldMakeTypo =
+        isLastSentence &&
+        !typoInProgressRef.current &&
+        Math.random() < typoChance &&
+        ![" ", "\n", "/", "*", "-", ">"].includes(
+          processedText[currentCharIndex]
+        );
+
+      // Escritura normal
+      schedule(() => {
+        if (typoInProgressRef.current) return;
+        setDisplayedText((prev) => prev + processedText[currentCharIndex]);
+        setCurrentCharIndex((prev) => prev + 1);
+      }, getRandomSpeed());
+
+      return () => clearTimeout(timeout);
+    }
+
+    // FIN DE BLOQUE
+    // Si estamos en el último bloque y no hay loop, solo terminamos (NO borramos, NO avanzamos)
+    if (!loop && currentTextIndex === textArray.length - 1) return;
+
+    // Si hay más bloques, activa el borrado (efecto frase a frase)
+    schedule(() => {
+      setIsDeleting(true);
+    }, pauseDuration);
 
     return () => clearTimeout(timeout);
   }, [
@@ -186,6 +201,7 @@ const TextType = ({
     hideCursorWhileTyping &&
     (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
+  // RENDERizado (colores, formatos)
   return createElement(
     Component,
     {
@@ -193,49 +209,64 @@ const TextType = ({
       className: `whitespace-pre-wrap tracking-tight ${className}`,
       ...props,
     },
-    <span className="inline">
-      {
-        // Renderiza el texto mezclando color para comentarios
-        (() => {
-          const lines = displayedText.split("\n");
-          return [
-            lines.map((line, idx) => {
-              // Se colorea sólo el comentario pero sin fragmentar varios spans
-              if (
-                line.trim().startsWith("//") ||
-                line.trim().startsWith("/*") ||
-                line.trim().startsWith("/**") ||
-                line.trim().startsWith("---") ||
-                line.trim().startsWith("*/")
-              ) {
-                return (
-                  <span key={idx} style={{ color: "#19aa51" }}>
-                    {line}
-                    {idx < lines.length - 1 ? "\n" : ""}
-                  </span>
-                );
-              }
+    <span className="inline" style={{ fontSize: "1.1rem" }}>
+      {(() => {
+        const lines = displayedText.split("\n");
+        return [
+          lines.map((line, idx) => {
+            if (line.trim().startsWith(">")) {
               return (
-                <span key={idx}>
+                <span
+                  key={idx}
+                  style={{
+                    color: "#d21c1c",
+                    fontStyle: "italic",
+                    background: "rgba(229, 231, 235, 0.25)",
+                    padding: "0.15em 0.5em",
+                    borderRadius: "6px",
+                  }}
+                >
+                  {line.replace(/^>\s?/, "")}
+                  {idx < lines.length - 1 ? "\n" : ""}
+                </span>
+              );
+            }
+
+            if (
+              line.trim().startsWith("//") ||
+              line.trim().startsWith("/*") ||
+              line.trim().startsWith("/**") ||
+              line.trim().startsWith("---") ||
+              line.trim().startsWith("*/")
+            ) {
+              return (
+                <span key={idx} style={{ color: "#19aa51" }}>
                   {line}
                   {idx < lines.length - 1 ? "\n" : ""}
                 </span>
               );
-            }),
-            // El cursor SIEMPRE está justo después del texto que se va completando
-            showCursor && (
-              <span
-                ref={cursorRef}
-                className={`ml-1 inline-block opacity-100 ${
-                  shouldHideCursor ? "hidden" : ""
-                } ${cursorClassName}`}
-              >
-                {cursorCharacter}
+            }
+
+            return (
+              <span key={idx}>
+                {line}
+                {idx < lines.length - 1 ? "\n" : ""}
               </span>
-            ),
-          ];
-        })()
-      }
+            );
+          }),
+
+          showCursor && (
+            <span
+              ref={cursorRef}
+              className={`ml-1 inline-block ${
+                shouldHideCursor ? "hidden" : ""
+              } ${cursorClassName}`}
+            >
+              {cursorCharacter}
+            </span>
+          ),
+        ];
+      })()}
     </span>
   );
 };

@@ -43,7 +43,7 @@ function App() {
         <img
           src={"/PrettyPage/images/card-love.png"}
           alt="Sobre carta con corazón"
-          className="envelope-image"
+          className="envelope-image animate-bounce"
         />
       </div>
 
@@ -65,6 +65,19 @@ function App() {
             <BunnyHeart dateInit={new Date("2020-12-16")} phrase="Ha x is" />
           )}
         </div>
+      </div>
+      <div
+        style={{
+          position: "fixed",
+          display: "flex",
+          justifyContent: "right",
+          bottom: 0,
+          right: 0,
+          paddingRight: "1vw",
+          zIndex: 50,
+        }}
+      >
+        <p style={{color:"black"}}>🦕❤️‍🩹Atte Issy❤️‍🩹🦕</p>
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ export function BunnyHeart({
 }) {
   const centerX = 350;
   const centerY = 350;
-  const points = getHeartCoords(15, centerX, centerY, 300);
+  const points = getHeartCoords(17, centerX, centerY, 400);
 
   // Guarda una referencia a cada conejo
   const bunnyRefs = useRef<(SVGImageElement | null)[]>([]);
@@ -85,9 +85,9 @@ export function BunnyHeart({
         </svg>
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 md:w-[360px] text-center text-gray-700 font-serif">
           <h2 className="m-0 font-light text-2xl">{phrase}</h2>
-          <div className="mt-3 text-lg italic text-purple-600">
+          <p className="mt-3 text-lg italic text-purple-600">
             Tiempo juntos desde:
-          </div>
+          </p>
           <div className="mt-3 text-base">
             {days} días {hours} horas {minutes} minutos {seconds} segundos
           </div>

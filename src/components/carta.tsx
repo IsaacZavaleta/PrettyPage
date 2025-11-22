@@ -7,8 +7,7 @@ interface TextTypeProps {
 }
 
 export function GetDataInfo({ isLoaded }: TextTypeProps) {
-  const cartaCodigo = `
-/*
+  const cartaCodigo = `/*
 --- THE CODE CARTITA OF AMORS ---
  */
 Mi pequeña gatita ❤️,
@@ -17,8 +16,7 @@ Sé que no soy el mejor escribiendo cartitas,
 y tampoco sé si tengas mucho tiempo para leer esto...
 // Quiero que sepas cuánto me esfuerzo y lo importante que eres para mí
 
-pero aun así quiero que sepas que me esfuerzo,
-porque quiero demostrarte cuánto te amo
+Pero aun así quiero que sepas que me esfuerzo, porque quiero demostrarte cuánto te amo
 (y también mi leve capacidad de programar :b).
 
 /* Perdon.txt */
@@ -31,22 +29,22 @@ No sé qué tan sano sea, pero la verdad es que pensar en ti me anima, me impuls
 Me sorprende lo que puedo llegar a hacer solo por querer verte sonreír.
 // Me encanta tu sonrisa... y cuidarte... y ojalá pueda ser esa persona que despierte en ti sentimientos bonitos, seguros, ese amor suave y cálido que tú mereces.
 
-if (te_sientes_triste || te_hace_falta_un_abrazo) {
-    Vuelve a esta página cuando lo necesites
-}
+> if (te_sientes_triste || te_hace_falta_un_abrazo) {
+>     Vuelve a esta página cuando lo necesites
+> }
 
 /* Juntos.txt */
 Quiero seguir actualizándola con notitas para ti.
 O quizá haga otras nuevas.
 No sé, solo sé que quiero seguirte haciendo regalitos para mostrarte el cariño tan dulce que siento por ti.
 
-Amo nuestros encuentros: // románticos, privados, flexibles, juegos, charlas largas, despensa, días normales, días especiales
+Amo nuestros encuentros: 
+// románticos, privados, flexibles, juegos, charlas largas, despensa, días normales, días especiales
 
 /* Cierre personalizado */
 Me fascina eso de nosotros: que somos todo, de formas bonitas, de formas reales, de formas que se sienten como hogar.
 
-Con cariño (y un cachito de sueño, pero más amor), Issy ❤️
-`;
+Con cariño (y un cachito de sueño, pero más amor), Issy ❤️`;
   const [isDateActive, setIsDateActive] = useState(false);
 
   useEffect(() => {
