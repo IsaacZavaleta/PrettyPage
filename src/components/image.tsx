@@ -71,7 +71,7 @@ export function BunnyHeart({
           {points.map((pt, idx) => (
             <image
               key={idx}
-              href="/images/bunny.png"
+              href="/PrettyPage/images/bunny.png"
               x={pt.x - 28}
               y={pt.y - 28}
               width={56}

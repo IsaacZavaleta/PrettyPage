@@ -41,7 +41,7 @@ function App() {
         onClick={handleOpen}
       >
         <img
-          src={"/images/card-love.png"}
+          src={"/PrettyPage/images/card-love.png"}
           alt="Sobre carta con corazón"
           className="envelope-image"
         />
