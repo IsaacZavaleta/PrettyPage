@@ -42,8 +42,9 @@
   color: black;
   padding: 1.5rem 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 5;
   opacity: 0;
   pointer-events: none;
@@ -60,19 +61,22 @@
   animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Pseudo-elemento para fondo semitransparente */
-.letter-fullscreen::before {
-  content: "";
+/* Fondo como elemento manipulable para parallax */
+.letter-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url("/public/images/foto\ amor.jpg") center center/cover no-repeat;
-  opacity: 0.1;
+  background-image: url('/images/foto amor.jpg');
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.12;
   pointer-events: none;
+  transform: translateY(var(--bg-y, 0px));
+  transition: transform 0.05s linear;
 }
 
 /* Para que el contenido quede encima */
-.letter-fullscreen > * {
+.letter-fullscreen > *:not(.letter-bg) {
   position: relative;
   z-index: 1;
 }
